@@ -36,6 +36,34 @@ namespace Othello
             return plansza[poziomo, pionowo];
             #endregion
         }
+        #region Konstruktor Klasy 
+        // utworzenie planszy za pomocą metody pomocniczej && ustawienie na niej kamieni
+        private void czyscPlansze()
+        {
+            for (int i = 0; i < SzerokoscPlanszy; i++)
+                for (int j = 0; j < WysokoscPlanaszy; j++)
+                    plansza[i, j] = 0;
 
+            int srodekSzerokosci = SzerokoscPlanszy / 2;
+            int srodekWysokosci = WysokoscPlanaszy / 2;
+
+            plansza[srodekSzerokosci - 1, srodekWysokosci - 1] = plansza[srodekSzerokosci, srodekWysokosci] = 1;
+            plansza[srodekSzerokosci - 1, srodekWysokosci] = plansza[srodekSzerokosci, srodekWysokosci - 1] = 2;
+        }
+        // wyznaczenie gracza wykonującego pierwszy ruch za pomocą konstruktora
+        public GameRules(int numerGraczaRozpoczynajacego, int szerokoscPlanszy=8, int wysokoscPlanszy=8)
+        {
+            if (numerGraczaRozpoczynajacego < 1 || numerGraczaRozpoczynajacego > 2)
+                throw new Exception("Nieprawidlowy numer gracza rozpoczynajacego gre");
+
+            SzerokoscPlanszy = szerokoscPlanszy;
+            WysokoscPlanaszy = wysokoscPlanszy;
+            plansza = new int[SzerokoscPlanszy, WysokoscPlanaszy];
+
+            czyscPlansze();
+
+            NumerGraczaWykonujacegoNastepnyRuch = numerGraczaRozpoczynajacego;
+        }
+        #endregion
     }
 }
