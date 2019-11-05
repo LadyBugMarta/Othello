@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28010.2046
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Othello", "Othello\Othello.csproj", "{DA77CB8E-0140-43D0-86AE-2C61F92361CD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameRules_UnitTest", "GameRules_UnitTest\GameRules_UnitTest.csproj", "{03E8D02B-CF39-4D88-9478-676C598E7413}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{DA77CB8E-0140-43D0-86AE-2C61F92361CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA77CB8E-0140-43D0-86AE-2C61F92361CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA77CB8E-0140-43D0-86AE-2C61F92361CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03E8D02B-CF39-4D88-9478-676C598E7413}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03E8D02B-CF39-4D88-9478-676C598E7413}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03E8D02B-CF39-4D88-9478-676C598E7413}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03E8D02B-CF39-4D88-9478-676C598E7413}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

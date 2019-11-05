@@ -28,8 +28,8 @@ namespace Othello
             return poziomo >= 0 && poziomo < SzerokoscPlanszy &&
                 pionowo >= 0 && pionowo < WysokoscPlanaszy;
         }
-        // pozwala na odczytanie stanu planszy 
-        private int PobierzStanPola(int poziomo, int pionowo)
+        // metoda pozwalająca na odczytanie stanu planszy 
+        public int PobierzStanPola(int poziomo, int pionowo)
         {
             if (!czyWspolrzednePolaPrawidlowe(poziomo, pionowo))
                 throw new Exception("Nieprawidlowe wspolrzedne pola");
@@ -38,7 +38,7 @@ namespace Othello
         }
         #region Konstruktor Klasy 
         // utworzenie planszy za pomocą metody pomocniczej && ustawienie na niej kamieni
-        private void czyscPlansze()
+        private void tworzPlansze()
         {
             for (int i = 0; i < SzerokoscPlanszy; i++)
                 for (int j = 0; j < WysokoscPlanaszy; j++)
@@ -60,7 +60,7 @@ namespace Othello
             WysokoscPlanaszy = wysokoscPlanszy;
             plansza = new int[SzerokoscPlanszy, WysokoscPlanaszy];
 
-            czyscPlansze();
+            tworzPlansze();
 
             NumerGraczaWykonujacegoNastepnyRuch = numerGraczaRozpoczynajacego;
             obliczLiczbyPol(); // licznik
@@ -68,7 +68,7 @@ namespace Othello
 
         #endregion
         #region Implementacja zasad gry
-        private void zmieńBiezacegoGracza()
+        private void zmienBiezacegoGracza()
         {
             NumerGraczaWykonujacegoNastepnyRuch = numerPrzeciwnika(NumerGraczaWykonujacegoNastepnyRuch);
         }
@@ -121,7 +121,7 @@ namespace Othello
                     {
                         int max_index = Math.Max(Math.Abs(i - poziomo), Math.Abs(j - pionowo)); // przejmujemy jak najwięcej pól
 
-                        if (!tylkoTest)
+                        if (!tylkoTest) // ustawienie wartości zmienna true
                         {
                             for (int index = 0; index < max_index; index++)
                                 plansza[poziomo + index * kierunekPoziomo, pionowo + index * kierunekPionowo] = NumerGraczaWykonujacegoNastepnyRuch;
@@ -134,7 +134,7 @@ namespace Othello
 
             // zmiana gracza, jeżeli ruch został wykonany 
             if (ilePolPrzejetych > 0 && !tylkoTest)
-                zmieńBiezacegoGracza();
+                zmienBiezacegoGracza();
             // zmienna ilePolPrzejętych nie uwzględnia dostawionego kamienia
             return ilePolPrzejetych;
             
@@ -146,21 +146,22 @@ namespace Othello
             return PolozKamien(poziomo, pionowo, false) > 0;
         }
         #endregion
-        // pola zajęte przez obu graczy
+        // pola zajęte przez obu graczy, ocena przewagi
         #region Obliczanie pól zajętych przez graczy
 
-        private int[] liczbyPol = new int[3]; // [puste pola], [liczbaPolGracz1], [liczbaPolGracz2]
+        private int[] liczbyPol = new int[3]; // [puste pola, liczbaPolGracz1, liczbaPolGracz2]
 
         private void obliczLiczbyPol()  
         {
             for (int i = 0; i < liczbyPol.Length; ++i)
                 liczbyPol[i] = 0;
 
-            for (int i = 0; i < SzerokoscPlanszy; i++)
+            for (int i = 0; i < SzerokoscPlanszy; ++i)
                 for (int j = 0; j < WysokoscPlanaszy; ++j)
                     liczbyPol[plansza[i, j]]++;
         }
-        public int LiczbaPustychPol {  get { return liczbyPol[0]; } } // get - tylko do odczytu
+        // 3 właściwości tylko do odczytu 
+        public int LiczbaPustychPol {  get { return liczbyPol[0]; } } 
         public int LiczbaPolGracz1 {  get { return liczbyPol[1]; } }
         public int LiczbaPolGracz2 {  get { return liczbyPol[2]; } }
         #endregion
