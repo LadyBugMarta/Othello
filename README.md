@@ -14,4 +14,4 @@ Gra kończy się, gdy wszystkie pola są zajęte lub gdy żaden z graczy nie mo�
 W grze zostaje oddzielony model (zasady gry) od widoku (klasy okna).
 
 
- 
+ Check
