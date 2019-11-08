@@ -95,9 +95,7 @@ namespace GameRules_UnitTest
             stanPola = gameRules.PobierzStanPola(-1, 0);
             stanPola = gameRules.PobierzStanPola(-1, wysokoscPlanszy-1);
             stanPola = gameRules.PobierzStanPola(szerokoscPlanszy - 1, -1);
-
         }
-       
 
     }
 }
