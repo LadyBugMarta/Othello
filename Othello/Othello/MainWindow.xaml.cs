@@ -34,7 +34,7 @@ namespace Othello
             }
         }
 
-        // wyświetlanie numeru gracza na przycisku
+        // kolory kamieni na planszy
         private void uzgodnijZawartoscPlanszy()
         {
             if (!planszaZaainicjowana) return;
@@ -46,35 +46,55 @@ namespace Othello
                 }
 
             playerColor.Background = kolory[rule.NumerGraczaWykonujacegoNastepnyRuch];
-            blackField.Text = rule.LiczbaPolGracz1.ToString();
-            whiteField.Text = rule.LiczbaPolGracz2.ToString();
+            blackField.Text = rule.LiczbaPolGracz1.ToString(); // wyświetlenie ilości punktów czarnego gracza
+            whiteField.Text = rule.LiczbaPolGracz2.ToString(); // wyświetlenie ilości punktów białego gracza
 
         }
-
+        private struct wspolrzednePola
+        {
+            public int Poziomo, Pionowo;
+        }
+        // metoda odczytująca własności Tag przycisku
+        void kliknieciePolaPlanszy(object sender, RoutedEventArgs e)
+        {
+            Button kliknietyPrzycisk = sender as Button;
+            wspolrzednePola wspolrzedne = (wspolrzednePola)kliknietyPrzycisk.Tag;
+            int kliknieciePoziomo = wspolrzedne.Poziomo;
+            int kliknieciePionowo = wspolrzedne.Pionowo;
+       
+            // wykonanie ruchu
+            int zapamietanyNumerGracza = rule.NumerGraczaWykonujacegoNastepnyRuch;
+            if (rule.PolozKamien(kliknieciePoziomo, kliknieciePionowo))
+                uzgodnijZawartoscPlanszy();
+        }
         public MainWindow()
         {
-            InitializeComponent();
+            InitializeComponent(); // dostęp do MainWindow
 
             // podział planszy na wiersze i kolumny
             for (int i = 0; i < rule.SzerokoscPlanszy; i++)
-                drawBoard.ColumnDefinitions.Add(new ColumnDefinition());
+                drawBoard.ColumnDefinitions.Add(new ColumnDefinition()); // dodaj kolumne
             for (int j = 0; j < rule.WysokoscPlanaszy; j++)
-                drawBoard.RowDefinitions.Add(new RowDefinition());
+                drawBoard.RowDefinitions.Add(new RowDefinition()); // dodaj wiersz
 
             // utworzenie przycisków
             plansza = new Button[rule.SzerokoscPlanszy, rule.WysokoscPlanaszy];
-            for(int i=0; i<rule.SzerokoscPlanszy;i++)
-                for(int j=0; j<rule.WysokoscPlanaszy; j++)
+            for (int i = 0; i < rule.SzerokoscPlanszy; i++)
+                for (int j = 0; j < rule.WysokoscPlanaszy; j++)
                 {
-                    Button przycisk = new Button();
-                    przycisk.Margin = new Thickness(0);
-                    drawBoard.Children.Add(przycisk);
-                    Grid.SetColumn(przycisk, i);
-                    Grid.SetRow(przycisk, j);
-                    plansza[i, j] = przycisk;
+                    Button przycisk = new Button(); // tworzymy nowy przycisk
+                    przycisk.Margin = new Thickness();
+                    drawBoard.Children.Add(przycisk); // dodaj przycisk
+                    Grid.SetColumn(przycisk, i); // po wierszach
+                    Grid.SetRow(przycisk, j); // po kolumnach
+                    przycisk.Tag = new wspolrzednePola { Poziomo = i, Pionowo = j };
+                    przycisk.Click += new RoutedEventHandler(kliknieciePolaPlanszy);
+                    plansza[i, j] = przycisk; // rysuj przyciski po całej planszy
                 }
             uzgodnijZawartoscPlanszy();
-            //rule.PolozKamien(2, 4);
+
         }
+        
+
     }
 }
