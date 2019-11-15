@@ -54,18 +54,6 @@ namespace Othello
         {
             public int Poziomo, Pionowo;
         }
-
-        // historia ruchów obu graczy zapisana w ListBox
-        // w planszy standardowej 8x8 oznaczenia od A1 do H8
-        // przy powiększeniu planszy w konstruktorze potrzebne są większe wartości 
-        private static string symbolPola(int poziomo, int pionowo)
-        {
-            // przy większej planszy wypisz wartość 2 liczb po przecinku w nawiasie
-            if (poziomo > 25 || pionowo > 8) return "(" + poziomo.ToString() + "," + pionowo.ToString() + ")";
-            // przy mniejszej planszy wypisz wartość od A1 do Z9 
-            return "" + "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[poziomo] + "123456789"[pionowo];
-        }
-
         // metoda odczytująca własności Tag przycisku
         void kliknieciePolaPlanszy(object sender, RoutedEventArgs e)
         {
@@ -78,19 +66,6 @@ namespace Othello
             int zapamietanyNumerGracza = rule.NumerGraczaWykonujacegoNastepnyRuch;
             if (rule.PolozKamien(kliknieciePoziomo, kliknieciePionowo))
                 uzgodnijZawartoscPlanszy();
-
-            // lista ruchow
-            switch (zapamietanyNumerGracza)
-            {
-                case 1:
-                    blackMoves.Items.Add(symbolPola(kliknieciePoziomo, kliknieciePionowo));
-                    break;
-                case 2:
-                    whiteMoves.Items.Add(symbolPola(kliknieciePoziomo, kliknieciePionowo));
-                    break;
-            }
-            blackMoves.SelectedIndex = blackMoves.Items.Count - 1;
-            whiteMoves.SelectedIndex = whiteMoves.Items.Count - 1;
         }
         public MainWindow()
         {
