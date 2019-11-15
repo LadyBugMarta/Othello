@@ -88,7 +88,7 @@ namespace Othello
                     Grid.SetColumn(przycisk, i); // po wierszach
                     Grid.SetRow(przycisk, j); // po kolumnach
                     przycisk.Tag = new wspolrzednePola { Poziomo = i, Pionowo = j };
-                    przycisk.Click += new RoutedEventHandler(kliknieciePolaPlanszy);
+                    przycisk.Click += new RoutedEventHandler(kliknieciePolaPlanszy); //delegat używany do zdarzeń
                     plansza[i, j] = przycisk; // rysuj przyciski po całej planszy
                 }
             uzgodnijZawartoscPlanszy();

@@ -165,5 +165,66 @@ namespace Othello
         public int LiczbaPolGracz1 {  get { return liczbyPol[1]; } }
         public int LiczbaPolGracz2 {  get { return liczbyPol[2]; } }
         #endregion
+        #region Wykrywanie szczególnych sytuacji w grze
+
+        // metoda sprawdzająca czy gracz może położyć kamień na planszy
+        private bool czyBiezacyGraczMozeWykonacRuch()
+        {
+            int liczbaPoprawnychPol = 0;
+            for (int i = 0; i < SzerokoscPlanszy; i++)
+                for (int j = 0; j < WysokoscPlanaszy; j++)
+                    if (plansza[i, j] == 0 && PolozKamien(i, j, true) > 0) // jeżeli pola są puste i możliwe jest położenie kamienia 
+                        liczbaPoprawnychPol++; // zwiększaj liczbaPoprawnychPol
+            return liczbaPoprawnychPol > 0;
+        }
+
+        // metoda odpowiedzialna za oddanie ruchu przeciwnikowi, jeśli gracz nie może położyć kamienia na planszy
+        public void oddajRuch()
+        {
+            if (czyBiezacyGraczMozeWykonacRuch())
+                throw new Exception("Gracz nie może oddać ruchu jeśli wykonanie ruchu jest możliwe");
+            zmienBiezacegoGracza();
+        }
+
+        // typ wyliczeniowy obejmujący wszystkie możliwe sytuacje w grze 
+        public enum SytuacjaNaPlanszy
+        {
+            RuchJestMozliwy,
+            BiezacyGraczMozeWykonacRuch,
+            ObajGraczeNieMogaWykonacRuchu,
+            WszystkiePolaSaZajete
+        }
+
+        // co się dzieje na planszy 
+        public SytuacjaNaPlanszy ZbadajSytuacjęNaPlanszy()
+        {
+            if (LiczbaPustychPol == 0) return SytuacjaNaPlanszy.WszystkiePolaSaZajete; // brak pustych pól
+
+            // wykrycie możliwości ruchu gracza
+            bool czyMozliwyRuch = czyBiezacyGraczMozeWykonacRuch();
+            if (czyMozliwyRuch) return SytuacjaNaPlanszy.RuchJestMozliwy;
+            else
+            {
+                // wykrycie możliwości ruchu przeciwnika
+                zmienBiezacegoGracza();
+                bool czyMozliwyRuchPrzeciwnika = czyBiezacyGraczMozeWykonacRuch();
+                zmienBiezacegoGracza();
+                if (czyMozliwyRuchPrzeciwnika)
+                    return SytuacjaNaPlanszy.BiezacyGraczMozeWykonacRuch;
+                else return SytuacjaNaPlanszy.ObajGraczeNieMogaWykonacRuchu; // może wystąpić tylko na wielkiej planszy 
+            }
+        }
+
+        // wyłonienie zwycięzcy lub ustalenie remisu
+        public int NumerGraczaMajacegoPrzewage
+        {
+            // tylko do odczytu
+            get
+            { 
+                if (LiczbaPolGracz1 == LiczbaPolGracz2) return 0; // w przypadku remisu własność zwraca 0
+                else return (LiczbaPolGracz1 > LiczbaPolGracz2) ? 1 : 2; // ustalenie zwycięzcy
+            }
+        }
+        #endregion
     }
 }
