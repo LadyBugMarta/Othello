@@ -190,7 +190,7 @@ namespace Othello
         public enum SytuacjaNaPlanszy
         {
             RuchJestMozliwy,
-            BiezacyGraczMozeWykonacRuch,
+            BiezacyGraczNieMozeWykonacRuchu,
             ObajGraczeNieMogaWykonacRuchu,
             WszystkiePolaSaZajete
         }
@@ -210,7 +210,7 @@ namespace Othello
                 bool czyMozliwyRuchPrzeciwnika = czyBiezacyGraczMozeWykonacRuch();
                 zmienBiezacegoGracza();
                 if (czyMozliwyRuchPrzeciwnika)
-                    return SytuacjaNaPlanszy.BiezacyGraczMozeWykonacRuch;
+                    return SytuacjaNaPlanszy.BiezacyGraczNieMozeWykonacRuchu;
                 else return SytuacjaNaPlanszy.ObajGraczeNieMogaWykonacRuchu; // może wystąpić tylko na wielkiej planszy 
             }
         }

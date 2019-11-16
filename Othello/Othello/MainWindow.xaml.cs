@@ -23,6 +23,7 @@ namespace Othello
     {
         private GameRules rule = new GameRules(1);
         private SolidColorBrush[] kolory = { Brushes.SpringGreen, Brushes.Black, Brushes.White };
+        string[] nazwyGraczy = { "", "black", "white" }; // do wyświetlenia komunikatu o zwycięzcy
 
         private Button[,] plansza;
 
@@ -69,26 +70,72 @@ namespace Othello
             wspolrzednePola wspolrzedne = (wspolrzednePola)kliknietyPrzycisk.Tag;
             int kliknieciePoziomo = wspolrzedne.Poziomo;
             int kliknieciePionowo = wspolrzedne.Pionowo;
-       
+
             // wykonanie ruchu
             int zapamietanyNumerGracza = rule.NumerGraczaWykonujacegoNastepnyRuch;
             if (rule.PolozKamien(kliknieciePoziomo, kliknieciePionowo))
-                uzgodnijZawartoscPlanszy();
-            // lista ruchów 
-            switch (zapamietanyNumerGracza)
             {
-                case 1:
-                    blackMoves.Items.Add(symbolPola(kliknieciePoziomo, kliknieciePionowo));
-                    break;
-                case 2:
-                    whiteMoves.Items.Add(symbolPola(kliknieciePoziomo, kliknieciePionowo));
-                    break;
-            }
-            blackMoves.SelectedIndex = blackMoves.Items.Count - 1;
-            blackMoves.SelectedIndex = blackMoves.Items.Count - 1;
-        
+                uzgodnijZawartoscPlanszy();
+                // lista ruchów 
+                switch (zapamietanyNumerGracza)
+                {
+                    case 1:
+                        blackMoves.Items.Add(symbolPola(kliknieciePoziomo, kliknieciePionowo));
+                        break;
+                    case 2:
+                        whiteMoves.Items.Add(symbolPola(kliknieciePoziomo, kliknieciePionowo));
+                        break;
+                }
+                blackMoves.SelectedIndex = blackMoves.Items.Count - 1;
+                whiteMoves.SelectedIndex = whiteMoves.Items.Count - 1;
 
+                // sytuacje specjalne
+                GameRules.SytuacjaNaPlanszy sytuacjaNaPlanszy = rule.ZbadajSytuacjęNaPlanszy();
+                bool gameOver = false;
+                switch (sytuacjaNaPlanszy)
+                {
+                    case GameRules.SytuacjaNaPlanszy.BiezacyGraczNieMozeWykonacRuchu:
+                        MessageBox.Show("Player " + nazwyGraczy[rule.NumerGraczaWykonujacegoNastepnyRuch] + " is forced to give up the movement");
+                        rule.oddajRuch();
+                        uzgodnijZawartoscPlanszy();
+                        break;
+                    case GameRules.SytuacjaNaPlanszy.ObajGraczeNieMogaWykonacRuchu:
+                        MessageBox.Show("Both players can't make a move.");
+                        gameOver = true;
+                        break;
+                    case GameRules.SytuacjaNaPlanszy.WszystkiePolaSaZajete:
+                        gameOver = true;
+                        break;
+                }
+
+                // koniec gry - info o wyniku
+                if (gameOver)
+                {
+                    int numerZwyciezcy = rule.NumerGraczaMajacegoPrzewage;
+                    if (numerZwyciezcy != 0) MessageBox.Show("Congratulations! The winner is " + nazwyGraczy[numerZwyciezcy] + " player.", Title, MessageBoxButton.OK, MessageBoxImage.Information);
+                    else MessageBox.Show("It's a tie.", Title, MessageBoxButton.OK, MessageBoxImage.Information);
+                    if (MessageBox.Show("Do you wanna play again?", "The Othello", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes) == MessageBoxResult.Yes)
+                    {
+                        przygotowaniePlanszyDoNowejGry(1, rule.SzerokoscPlanszy, rule.WysokoscPlanaszy);
+                    }
+                    else
+                    {
+                        drawBoard.IsEnabled = false;
+                        playerColor.IsEnabled = false;
+                    }
+
+                }
+            }
     }
+    private void przygotowaniePlanszyDoNowejGry(int numerGraczaRozpoczynajacego, int szerokoscPlanszy = 8, int wysokoscPlanszy = 8)
+        {
+            rule = new GameRules(numerGraczaRozpoczynajacego, szerokoscPlanszy, wysokoscPlanszy);
+            blackMoves.Items.Clear();
+            whiteMoves.Items.Clear();
+            uzgodnijZawartoscPlanszy();
+            drawBoard.IsEnabled = true;
+            playerColor.IsEnabled = true;
+        }
     public MainWindow()
         {
             InitializeComponent(); // dostęp do MainWindow
