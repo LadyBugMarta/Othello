@@ -14,9 +14,6 @@
                              Storyboard.TargetProperty="Opacity"
                              Duration="0:0:2" To="0.0"/>
         </Storyboard>
-
-
-
         <!--efekt gradientu szarości na planszy-->
         <LinearGradientBrush x:Key="GreyGradient"
                              StartPoint="0,0.1" EndPoint="1,0.5">
@@ -24,7 +21,6 @@
             <GradientStop Color="Gray" Offset="1.0" />
 
         </LinearGradientBrush>
-
     </Window.Resources>
 
     <DockPanel>

@@ -6,219 +6,219 @@ namespace Othello
     {
         #region Stan Planszy
         // definiujemy planszę i metodę pozwalającą na odczyt stanu jej pól
-        public int SzerokoscPlanszy { get; private set; }
-        public int WysokoscPlanaszy { get; private set; }
+        public int BoardWidth { get; private set; }
+        public int boardHeight { get; private set; }
 
         // plansza jest deklarowana jako prywatna, a dostęp do niej jest możliwy dzięki publicznej metodzie PobierzStanPola
-        private int[,] plansza;
+        private int[,] board;
         // właśność identyfikująca gracza wykonującego następny ruch
-        public int NumerGraczaWykonujacegoNastepnyRuch { get; private set; } = 1;
+        public int NextPlayer { get; private set; } = 1;
         // wyznacza numer gracza, przeciwnego do podanego w argumencie (1 dla 2 && 2 dla 1)
-        private static int numerPrzeciwnika(int numerGracza)
+        private static int competitor(int playerNumber) // numer przeciwnika
         {
-            return (numerGracza == 1) ? 2 : 1;
+            return (playerNumber == 1) ? 2 : 1;
         }
         // metoda sprawdzająca poprawność podanej pozycji pola
-        private bool czyWspolrzednePolaPrawidlowe(int poziomo, int pionowo)
+        private bool isCoordinatesCorrect(int horizontally, int vertically) // czy współrzędne pola są prawidłowe
         {
-            return poziomo >= 0 && poziomo < SzerokoscPlanszy &&
-                pionowo >= 0 && pionowo < WysokoscPlanaszy;
+            return horizontally >= 0 && horizontally < BoardWidth &&
+                vertically >= 0 && vertically < boardHeight;
         }
         // metoda pozwalająca na odczytanie stanu planszy 
-        public int PobierzStanPola(int poziomo, int pionowo)
+        public int DownloadFieldStatus(int horizontally, int vertically)
         {
-            if (!czyWspolrzednePolaPrawidlowe(poziomo, pionowo))
-                throw new Exception("Nieprawidlowe wspolrzedne pola");
-            return plansza[poziomo, pionowo];
+            if (!isCoordinatesCorrect(horizontally, vertically))
+                throw new Exception("The invalid coordinate fields."); // Nieprawidlowe wspolrzedne pola
+            return board[horizontally, vertically];
             #endregion
         }
         #region Konstruktor Klasy 
         // utworzenie planszy za pomocą metody pomocniczej && ustawienie na niej kamieni
-        private void tworzPlansze()
+        private void createBoard()
         {
-            for (int i = 0; i < SzerokoscPlanszy; i++)
-                for (int j = 0; j < WysokoscPlanaszy; j++)
-                    plansza[i, j] = 0;
+            for (int i = 0; i < BoardWidth; i++)
+                for (int j = 0; j < boardHeight; j++)
+                    board[i, j] = 0;
 
-            int srodekSzerokosci = SzerokoscPlanszy / 2;
-            int srodekWysokosci = WysokoscPlanaszy / 2;
+            int middleWidth = BoardWidth / 2; // środek szerokości
+            int middleHeight = boardHeight / 2; // środek wysokości
 
-            plansza[srodekSzerokosci - 1, srodekWysokosci - 1] = plansza[srodekSzerokosci, srodekWysokosci] = 1;
-            plansza[srodekSzerokosci - 1, srodekWysokosci] = plansza[srodekSzerokosci, srodekWysokosci - 1] = 2;
+            board[middleWidth - 1, middleHeight - 1] = board[middleWidth, middleHeight] = 1;
+            board[middleWidth - 1, middleHeight] = board[middleWidth, middleHeight - 1] = 2;
         }
         // wyznaczenie gracza wykonującego pierwszy ruch za pomocą konstruktora
-        public GameRules(int numerGraczaRozpoczynajacego, int szerokoscPlanszy=4, int wysokoscPlanszy=4)
+        public GameRules(int firstPlayer, int boardWidth=8, int boardHeight=8)
         {
-            if (numerGraczaRozpoczynajacego < 1 || numerGraczaRozpoczynajacego > 2)
-                throw new Exception("Nieprawidlowy numer gracza rozpoczynajacego gre");
+            if (firstPlayer < 1 || firstPlayer > 2)
+                throw new Exception("The invalid player number who is starting the game."); // Nieprawidlowy numer gracza rozpoczynajacego gre
 
-            SzerokoscPlanszy = szerokoscPlanszy;
-            WysokoscPlanaszy = wysokoscPlanszy;
-            plansza = new int[SzerokoscPlanszy, WysokoscPlanaszy];
+            BoardWidth = boardWidth;
+            this.boardHeight = boardHeight;
+            board = new int[BoardWidth, this.boardHeight];
 
-            tworzPlansze();
+            createBoard();
 
-            NumerGraczaWykonujacegoNastepnyRuch = numerGraczaRozpoczynajacego;
-            obliczLiczbyPol(); // licznik
+            NextPlayer = firstPlayer;
+            counter(); // licznik punktów
         }
 
         #endregion
         #region Implementacja zasad gry
-        private void zmienBiezacegoGracza()
+        private void changeCurrentPlayer()
         {
-            NumerGraczaWykonujacegoNastepnyRuch = numerPrzeciwnika(NumerGraczaWykonujacegoNastepnyRuch);
+            NextPlayer = competitor(NextPlayer);
         }
 
         // sprawdzenie czy argumenty metody należą do planszy && pole jest wolne
-        protected int PolozKamien(int poziomo, int pionowo, bool tylkoTest) 
+        protected int PutStone(int horizontally, int vertically, bool test)  // połóż kamień
         {
             // czy wsplółrzędne są prawidłowe
-            if (!czyWspolrzednePolaPrawidlowe(poziomo, pionowo))
-                throw new Exception("Nieprawidłowe współrzędne pola");
+            if (!isCoordinatesCorrect(horizontally, vertically))
+                throw new Exception("The invalid field coordinates."); // Nieprawidłowe współrzędne pola
 
             // czy pole nie jest już zajęte
-            if (plansza[poziomo, pionowo] != 0) return -1;
+            if (board[horizontally, vertically] != 0) return -1;
 
-            int ilePolPrzejetych = 0;
+            int howManyFields = 0; // ile pól przejętych
 
             //pętla po 8 kierunkach przyjmuje wartości {-1,0,1}
-            for (int kierunekPoziomo = -1; kierunekPoziomo <= 1; kierunekPoziomo++) // sprawdzamy czy możemy przejąć pole w każdą stronę
-                for (int kierunekPionowo = -1; kierunekPionowo <= 1; kierunekPionowo++)
+            for (int horizontallyDirection = -1; horizontallyDirection <= 1; horizontallyDirection++) // sprawdzamy czy możemy przejąć pole w każdą stronę
+                for (int verticallyDirection = -1; verticallyDirection <= 1; verticallyDirection++)
                 {
                     // wymuszenie pominięcia przypadku, gdy obie zmienne są równe 0
-                    if (kierunekPoziomo == 0 && kierunekPionowo == 0) continue;
+                    if (horizontallyDirection == 0 && verticallyDirection == 0) continue;
 
                     // szukanie kamieni gracza w jednym z 8 kierunków
-                    int i = poziomo;
-                    int j = pionowo;
-                    bool znalezionyKamienPrzeciwnika = false;
-                    bool znalezionyKamienGraczaWykonujacegoRuch = false;
-                    bool znalezionePustePole = false;
-                    bool osiagnietaKrawedzPlanszy = false;
+                    int i = horizontally;
+                    int j = vertically;
+                    bool foundRivalStone = false;
+                    bool foundNextPlayerStone = false;
+                    bool foundEmptyField = false;
+                    bool boardEdge = false; // osiagnieta krawędź planszy
                     do // przejmowanie pól
                     {
-                        i += kierunekPoziomo;
-                        j += kierunekPionowo;
-                        if (!czyWspolrzednePolaPrawidlowe(i, j)) osiagnietaKrawedzPlanszy = true;
-                        if (!osiagnietaKrawedzPlanszy)
+                        i += horizontallyDirection;
+                        j += verticallyDirection;
+                        if (!isCoordinatesCorrect(i, j)) boardEdge = true;
+                        if (!boardEdge)
                         {
-                            if (plansza[i, j] == NumerGraczaWykonujacegoNastepnyRuch) znalezionyKamienGraczaWykonujacegoRuch = true; // dopóki kładziemy kamień to wykonuje się pętla
-                            if (plansza[i, j] == 0) znalezionePustePole = true; // dopóki znajdziemy puste pole to wykonuje się pętla
-                            if (plansza[i, j] == numerPrzeciwnika(NumerGraczaWykonujacegoNastepnyRuch)) znalezionyKamienPrzeciwnika = true; // dopóki przeciwnik kładzie kamień to wykonuje się pętla
+                            if (board[i, j] == NextPlayer) foundNextPlayerStone = true; // dopóki kładziemy kamień to wykonuje się pętla
+                            if (board[i, j] == 0) foundEmptyField = true; // dopóki znajdziemy puste pole to wykonuje się pętla
+                            if (board[i, j] == competitor(NextPlayer)) foundRivalStone = true; // dopóki przeciwnik kładzie kamień to wykonuje się pętla
                         }
 
-                    } while (!(osiagnietaKrawedzPlanszy || znalezionyKamienGraczaWykonujacegoRuch || znalezionePustePole)); // game over, bye bye
+                    } while (!(boardEdge || foundNextPlayerStone || foundEmptyField)); // game over, bye bye
 
                     // sprawdzenie warunku poprawności ruchu
-                    bool polozenieKamieniaJestMozliwe = znalezionyKamienPrzeciwnika && znalezionyKamienGraczaWykonujacegoRuch && !znalezionePustePole;
+                    bool stonePlacementIsPossible = foundRivalStone && foundNextPlayerStone && !foundEmptyField;
                  
                     // "odwrócenie" kamieni w przypadku spełnionego warunku
-                    if (polozenieKamieniaJestMozliwe)
+                    if (stonePlacementIsPossible)
                     {
-                        int max_index = Math.Max(Math.Abs(i - poziomo), Math.Abs(j - pionowo)); // przejmujemy jak najwięcej pól
+                        int max_index = Math.Max(Math.Abs(i - horizontally), Math.Abs(j - vertically)); // przejmujemy jak najwięcej pól
 
-                        if (!tylkoTest) // ustawienie wartości zmienna true
+                        if (!test) // ustawienie wartości zmienna true
                         {
                             for (int index = 0; index < max_index; index++)
-                                plansza[poziomo + index * kierunekPoziomo, pionowo + index * kierunekPionowo] = NumerGraczaWykonujacegoNastepnyRuch;
+                                board[horizontally + index * horizontallyDirection, vertically + index * verticallyDirection] = NextPlayer;
                         }
-                        ilePolPrzejetych += max_index - 1; // bez tego kamienia który kładzie 
+                        howManyFields += max_index - 1; // bez tego kamienia który kładzie 
                     }
-                    obliczLiczbyPol(); // licznik
+                    counter(); // licznik punktów
 
                 } // koniec pętli po kierunkach
 
             // zmiana gracza, jeżeli ruch został wykonany 
-            if (ilePolPrzejetych > 0 && !tylkoTest)
-                zmienBiezacegoGracza();
+            if (howManyFields > 0 && !test)
+                changeCurrentPlayer();
             // zmienna ilePolPrzejętych nie uwzględnia dostawionego kamienia
-            return ilePolPrzejetych;
-            
+            return howManyFields;
         }
 
         // przeciążona wersja metody, sprawdza czy ruch jest możliwy
-        public bool PolozKamien(int poziomo, int pionowo)
+        public bool PutStone(int poziomo, int pionowo)
         {
-            return PolozKamien(poziomo, pionowo, false) > 0;
+            return PutStone(poziomo, pionowo, false) > 0;
         }
         #endregion
         // pola zajęte przez obu graczy, ocena przewagi
         #region Obliczanie pól zajętych przez graczy
 
-        private int[] liczbyPol = new int[3]; // [puste pola, liczbaPolGracz1, liczbaPolGracz2]
+        private int[] fieldsNumber = new int[3]; // [puste pola, liczbaPolGracz1, liczbaPolGracz2]
 
-        private void obliczLiczbyPol()  
+        private void counter()  // licznik punktów
         {
-            for (int i = 0; i < liczbyPol.Length; ++i)
-                liczbyPol[i] = 0;
+            for (int i = 0; i < fieldsNumber.Length; ++i)
+                fieldsNumber[i] = 0;
 
-            for (int i = 0; i < SzerokoscPlanszy; ++i)
-                for (int j = 0; j < WysokoscPlanaszy; ++j)
-                    liczbyPol[plansza[i, j]]++;
+            for (int i = 0; i < BoardWidth; ++i)
+                for (int j = 0; j < boardHeight; ++j)
+                    fieldsNumber[board[i, j]]++;
         }
         // 3 właściwości tylko do odczytu 
-        public int LiczbaPustychPol {  get { return liczbyPol[0]; } } 
-        public int LiczbaPolGracz1 {  get { return liczbyPol[1]; } }
-        public int LiczbaPolGracz2 {  get { return liczbyPol[2]; } }
+        public int EmptyFieldNumber {  get { return fieldsNumber[0]; } } 
+        public int PointsPlayer1 {  get { return fieldsNumber[1]; } }
+        public int PointsPlayer2 {  get { return fieldsNumber[2]; } }
         #endregion
         #region Wykrywanie szczególnych sytuacji w grze
 
         // metoda sprawdzająca czy gracz może położyć kamień na planszy
-        private bool czyBiezacyGraczMozeWykonacRuch()
+        private bool canMakeMove() // czy bieżący gracz może wykonać ruch
         {
-            int liczbaPoprawnychPol = 0;
-            for (int i = 0; i < SzerokoscPlanszy; i++)
-                for (int j = 0; j < WysokoscPlanaszy; j++)
-                    if (plansza[i, j] == 0 && PolozKamien(i, j, true) > 0) // jeżeli pola są puste i możliwe jest położenie kamienia 
-                        liczbaPoprawnychPol++; // zwiększaj liczbaPoprawnychPol
-            return liczbaPoprawnychPol > 0;
+            int correctFields = 0;
+            for (int i = 0; i < BoardWidth; i++)
+                for (int j = 0; j < boardHeight; j++)
+                    if (board[i, j] == 0 && PutStone(i, j, true) > 0) // jeżeli pola są puste i możliwe jest położenie kamienia 
+                        correctFields++; // zwiększaj liczbaPoprawnychPol
+            return correctFields > 0;
         }
 
         // metoda odpowiedzialna za oddanie ruchu przeciwnikowi, jeśli gracz nie może położyć kamienia na planszy
-        public void oddajRuch()
+        public void giveMove()
         {
-            if (czyBiezacyGraczMozeWykonacRuch())
-                throw new Exception("Gracz nie może oddać ruchu jeśli wykonanie ruchu jest możliwe");
-            zmienBiezacegoGracza();
+            if (canMakeMove())
+                // Gracz nie może oddać ruchu jeśli wykonanie ruchu jest możliwe
+                throw new Exception("A player may not return a move if it is possible to make a move.");
+            changeCurrentPlayer();
         }
 
         // typ wyliczeniowy obejmujący wszystkie możliwe sytuacje w grze 
-        public enum SytuacjaNaPlanszy
+        public enum Situation
         {
-            RuchJestMozliwy,
-            BiezacyGraczNieMozeWykonacRuchu,
-            ObajGraczeNieMogaWykonacRuchu,
-            WszystkiePolaSaZajete
+            MoveIsPossible,
+            CurrentPlayerCantMove,
+            BothPlayersCantMove,
+            BusyFields
         }
 
         // co się dzieje na planszy 
-        public SytuacjaNaPlanszy ZbadajSytuacjęNaPlanszy()
+        public Situation CheckSituation()
         {
-            if (LiczbaPustychPol == 0) return SytuacjaNaPlanszy.WszystkiePolaSaZajete; // brak pustych pól
+            if (EmptyFieldNumber == 0) return Situation.BusyFields; // brak pustych pól
 
             // wykrycie możliwości ruchu gracza
-            bool czyMozliwyRuch = czyBiezacyGraczMozeWykonacRuch();
-            if (czyMozliwyRuch) return SytuacjaNaPlanszy.RuchJestMozliwy;
+            bool isMovePossible = canMakeMove();
+            if (isMovePossible) return Situation.MoveIsPossible;
             else
             {
                 // wykrycie możliwości ruchu przeciwnika
-                zmienBiezacegoGracza();
-                bool czyMozliwyRuchPrzeciwnika = czyBiezacyGraczMozeWykonacRuch();
-                zmienBiezacegoGracza();
-                if (czyMozliwyRuchPrzeciwnika)
-                    return SytuacjaNaPlanszy.BiezacyGraczNieMozeWykonacRuchu;
-                else return SytuacjaNaPlanszy.ObajGraczeNieMogaWykonacRuchu; // może wystąpić tylko na wielkiej planszy 
+                changeCurrentPlayer();
+                bool isPossibleRivalMove = canMakeMove();
+                changeCurrentPlayer();
+                if (isPossibleRivalMove)
+                    return Situation.CurrentPlayerCantMove;
+                else return Situation.BothPlayersCantMove; // może wystąpić tylko na wielkiej planszy 
             }
         }
 
         // wyłonienie zwycięzcy lub ustalenie remisu
-        public int NumerGraczaMajacegoPrzewage
+        public int Lider
         {
             // tylko do odczytu
             get
             { 
-                if (LiczbaPolGracz1 == LiczbaPolGracz2) return 0; // w przypadku remisu własność zwraca 0
-                else return (LiczbaPolGracz1 > LiczbaPolGracz2) ? 1 : 2; // ustalenie zwycięzcy
+                if (PointsPlayer1 == PointsPlayer2) return 0; // w przypadku remisu własność zwraca 0
+                else return (PointsPlayer1 > PointsPlayer2) ? 1 : 2; // ustalenie zwycięzcy
             }
         }
         #endregion

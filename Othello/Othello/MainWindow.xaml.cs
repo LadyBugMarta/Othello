@@ -14,88 +14,87 @@ namespace Othello
     public partial class MainWindow : Window
     {
         private GameRules rule = new GameRules(1);
-        private SolidColorBrush[] kolory = { Brushes.SpringGreen, Brushes.Black, Brushes.White };
-        string[] nazwyGraczy = { "", "black", "white" }; // do wyświetlenia komunikatu o zwycięzcy
+        private SolidColorBrush[] colors = { Brushes.SpringGreen, Brushes.Black, Brushes.White };
+        string[] names = { "", "black", "white" }; // do wyświetlenia komunikatu o zwycięzcy
 
-        private Button[,] plansza;
+        private Button[,] board;
 
-        private bool planszaZaainicjowana
+        private bool initiatedBoard
         {
             get
             {
-                return plansza[rule.SzerokoscPlanszy - 1, rule.WysokoscPlanaszy - 1] != null;
+                return board[rule.BoardWidth - 1, rule.boardHeight - 1] != null;
             }
         }
 
         // kolory kamieni na planszy
-        private void uzgodnijZawartoscPlanszy()
+        private void boardContent()
         {
-            if (!planszaZaainicjowana) return;
+            if (!initiatedBoard) return;
 
-            for (int i = 0; i < rule.SzerokoscPlanszy; i++)
-                for (int j = 0; j < rule.WysokoscPlanaszy; j++)
+            for (int i = 0; i < rule.BoardWidth; i++)
+                for (int j = 0; j < rule.boardHeight; j++)
                 {
-                    plansza[i, j].Background = kolory[rule.PobierzStanPola(i, j)];
+                    board[i, j].Background = colors[rule.DownloadFieldStatus(i, j)];
                 }
 
-            playerColor.Background = kolory[rule.NumerGraczaWykonujacegoNastepnyRuch];
-            blackField.Text = rule.LiczbaPolGracz1.ToString(); // wyświetlenie ilości punktów czarnego gracza
-            whiteField.Text = rule.LiczbaPolGracz2.ToString(); // wyświetlenie ilości punktów białego gracza
-
+            playerColor.Background = colors[rule.NextPlayer];
+            blackField.Text = rule.PointsPlayer1.ToString(); // wyświetlenie ilości punktów czarnego gracza
+            whiteField.Text = rule.PointsPlayer2.ToString(); // wyświetlenie ilości punktów białego gracza
         }
-        private struct wspolrzednePola
+        private struct coordinates // współrzędne
         {
-            public int Poziomo, Pionowo;
+            public int Horizontally, Vertically;
         }
-        private static string symbolPola(int poziomo, int pionowo)
+        private static string symbolField(int horizontally, int vertically)
         {
             // gdy nie wystarcza liter i cyfr wyświetlane są zwykłe współrzędne pola w nawiasach
-            if (poziomo > 25 || pionowo > 8) return "(" + poziomo.ToString() + "," + pionowo.ToString() + ")";
+            if (horizontally > 25 || vertically > 8) return "(" + horizontally.ToString() + "," + vertically.ToString() + ")";
             // pole (0,0) to A1, pole (7,7) to H8
-            return "" + "ABCDEFGHIJKLMNOPQRSTUVXYZ"[poziomo] + "123456789"[pionowo];
+            return "" + "ABCDEFGHIJKLMNOPQRSTUVXYZ"[horizontally] + "123456789"[vertically];
         }
 
         // metoda odczytująca własności Tag przycisku
-        void kliknieciePolaPlanszy(object sender, RoutedEventArgs e)
+        void boardClickField(object sender, RoutedEventArgs e)
         {
-            Button kliknietyPrzycisk = sender as Button;
-            wspolrzednePola wspolrzedne = (wspolrzednePola)kliknietyPrzycisk.Tag;
-            int kliknieciePoziomo = wspolrzedne.Poziomo;
-            int kliknieciePionowo = wspolrzedne.Pionowo;
+            Button clickedButton = sender as Button;
+            coordinates coord = (coordinates)clickedButton.Tag;
+            int clickedHorizontally = coord.Horizontally;
+            int clickedVertically = coord.Vertically;
 
             // wykonanie ruchu
-            int zapamietanyNumerGracza = rule.NumerGraczaWykonujacegoNastepnyRuch;
-            if (rule.PolozKamien(kliknieciePoziomo, kliknieciePionowo))
+            int savedPlayerNumber = rule.NextPlayer;
+            if (rule.PutStone(clickedHorizontally, clickedVertically))
             {
-                uzgodnijZawartoscPlanszy();
+                boardContent();
                 // lista ruchów 
-                switch (zapamietanyNumerGracza)
+                switch (savedPlayerNumber)
                 {
                     case 1:
-                        blackMoves.Items.Add(symbolPola(kliknieciePoziomo, kliknieciePionowo));
+                        blackMoves.Items.Add(symbolField(clickedHorizontally, clickedVertically));
                         break;
                     case 2:
-                        whiteMoves.Items.Add(symbolPola(kliknieciePoziomo, kliknieciePionowo));
+                        whiteMoves.Items.Add(symbolField(clickedHorizontally, clickedVertically));
                         break;
                 }
                 blackMoves.SelectedIndex = blackMoves.Items.Count - 1;
                 whiteMoves.SelectedIndex = whiteMoves.Items.Count - 1;
 
                 // sytuacje specjalne
-                GameRules.SytuacjaNaPlanszy sytuacjaNaPlanszy = rule.ZbadajSytuacjęNaPlanszy();
+                GameRules.Situation situation = rule.CheckSituation();
                 bool gameOver = false;
-                switch (sytuacjaNaPlanszy)
+                switch (situation)
                 {
-                    case GameRules.SytuacjaNaPlanszy.BiezacyGraczNieMozeWykonacRuchu:
-                        MessageBox.Show("Player " + nazwyGraczy[rule.NumerGraczaWykonujacegoNastepnyRuch] + " is forced to give up the movement");
-                        rule.oddajRuch();
-                        uzgodnijZawartoscPlanszy();
+                    case GameRules.Situation.CurrentPlayerCantMove:
+                        MessageBox.Show("Player " + names[rule.NextPlayer] + " is forced to give up the movement"); // zmuszony do oddania ruchu
+                        rule.giveMove(); // oddaj ruch
+                        boardContent();
                         break;
-                    case GameRules.SytuacjaNaPlanszy.ObajGraczeNieMogaWykonacRuchu:
-                        MessageBox.Show("Both players can't make a move.");
+                    case GameRules.Situation.BothPlayersCantMove:
+                        MessageBox.Show("Both players can't make a move."); // obaj nie mogą wykonać ruchu
                         gameOver = true;
                         break;
-                    case GameRules.SytuacjaNaPlanszy.WszystkiePolaSaZajete:
+                    case GameRules.Situation.BusyFields: // wszystkie pola są zajęte
                         gameOver = true;
                         break;
                 }
@@ -103,27 +102,29 @@ namespace Othello
                 // koniec gry - info o wyniku
                 if (gameOver)
                 {
-                    int numerZwyciezcy = rule.NumerGraczaMajacegoPrzewage;
-                    if (numerZwyciezcy != 0) MessageBox.Show("Congratulations! The winner is " + nazwyGraczy[numerZwyciezcy] + " player.", Title, MessageBoxButton.OK, MessageBoxImage.Information);
-                    else MessageBox.Show("It's a tie.", Title, MessageBoxButton.OK, MessageBoxImage.Information);
+                    int winnerNumber = rule.Lider; // zwycięzca = gracz z przewagą
+                    // wygrana
+                    if (winnerNumber != 0) MessageBox.Show("Congratulations! The winner is " + names[winnerNumber] + " player.", Title, MessageBoxButton.OK, MessageBoxImage.Information);
+                    // remis
+                    else MessageBox.Show("It's a tie.", Title, MessageBoxButton.OK, MessageBoxImage.Information); 
+                    // nowa gra
                     if (MessageBox.Show("Do you wanna play again?", "The Othello", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes) == MessageBoxResult.Yes)
                     {
-                        przygotowaniePlanszyDoNowejGry(1, rule.SzerokoscPlanszy, rule.WysokoscPlanaszy);
+                        newBoard(1, rule.BoardWidth, rule.boardHeight);
                     }
                     else
                     {
                         Close();
                     }
-
                 }
             }
     }
-    private void przygotowaniePlanszyDoNowejGry(int numerGraczaRozpoczynajacego, int szerokoscPlanszy = 8, int wysokoscPlanszy = 8)
+    private void newBoard(int firstPlayer, int widthBoard = 8, int heightBoard = 8)
         {
-            rule = new GameRules(numerGraczaRozpoczynajacego, szerokoscPlanszy, wysokoscPlanszy);
+            rule = new GameRules(firstPlayer, widthBoard, heightBoard);
             blackMoves.Items.Clear();
             whiteMoves.Items.Clear();
-            uzgodnijZawartoscPlanszy();
+            boardContent();
             drawBoard.IsEnabled = true;
             playerColor.IsEnabled = true;
         }
@@ -132,27 +133,25 @@ namespace Othello
             InitializeComponent(); // dostęp do MainWindow
 
             // podział planszy na wiersze i kolumny
-            for (int i = 0; i < rule.SzerokoscPlanszy; i++)
+            for (int i = 0; i < rule.BoardWidth; i++)
                 drawBoard.ColumnDefinitions.Add(new ColumnDefinition()); // dodaj kolumne
-            for (int j = 0; j < rule.WysokoscPlanaszy; j++)
+            for (int j = 0; j < rule.boardHeight; j++)
                 drawBoard.RowDefinitions.Add(new RowDefinition()); // dodaj wiersz
 
             // utworzenie przycisków
-            plansza = new Button[rule.SzerokoscPlanszy, rule.WysokoscPlanaszy];
-            for (int i = 0; i < rule.SzerokoscPlanszy; i++)
-                for (int j = 0; j < rule.WysokoscPlanaszy; j++)
+            board = new Button[rule.BoardWidth, rule.boardHeight];
+            for (int i = 0; i < rule.BoardWidth; i++)
+                for (int j = 0; j < rule.boardHeight; j++)
                 {
-                    Button przycisk = new Button(); // tworzymy nowy przycisk
-                    przycisk.Margin = new Thickness();
-                    drawBoard.Children.Add(przycisk); // dodaj przycisk
-                    Grid.SetColumn(przycisk, i); // po wierszach
-                    Grid.SetRow(przycisk, j); // po kolumnach
-                    przycisk.Tag = new wspolrzednePola { Poziomo = i, Pionowo = j };
-                    przycisk.Click += new RoutedEventHandler(kliknieciePolaPlanszy); //delegat używany do zdarzeń
-                    plansza[i, j] = przycisk; // rysuj przyciski po całej planszy
+                    Button button = new Button(); // tworzymy nowy przycisk
+                    drawBoard.Children.Add(button); // dodaj przycisk
+                    Grid.SetColumn(button, i); // po wierszach
+                    Grid.SetRow(button, j); // po kolumnach
+                    button.Tag = new coordinates { Horizontally = i, Vertically = j };
+                    button.Click += new RoutedEventHandler(boardClickField); //delegat używany do zdarzeń
+                    board[i, j] = button; // rysuj przyciski po całej planszy
                 }
-            uzgodnijZawartoscPlanszy();
-
+            boardContent();
         }
 
         #region Zamykanie okna
@@ -172,7 +171,6 @@ namespace Othello
                 closingScenario.Begin();
                 e.Cancel = true; // blokuje zamknięcie okna, aby można było zobaczyć animacje
             }
-
         }
         // zamkniecie okna
         private void Storyboard_Completed(object sender, EventArgs e)
