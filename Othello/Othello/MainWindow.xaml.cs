@@ -54,6 +54,14 @@ namespace Othello
         {
             public int Poziomo, Pionowo;
         }
+        private static string symbolPola(int poziomo, int pionowo)
+        {
+            // gdy nie wystarcza liter i cyfr wyświetlane są zwykłe współrzędne pola w nawiasach
+            if (poziomo > 25 || pionowo > 8) return "(" + poziomo.ToString() + "," + pionowo.ToString() + ")";
+            // pole (0,0) to A1, pole (7,7) to H8
+            return "" + "ABCDEFGHIJKLMNOPQRSTUVXYZ"[poziomo] + "123456789"[pionowo];
+        }
+
         // metoda odczytująca własności Tag przycisku
         void kliknieciePolaPlanszy(object sender, RoutedEventArgs e)
         {
@@ -66,8 +74,22 @@ namespace Othello
             int zapamietanyNumerGracza = rule.NumerGraczaWykonujacegoNastepnyRuch;
             if (rule.PolozKamien(kliknieciePoziomo, kliknieciePionowo))
                 uzgodnijZawartoscPlanszy();
-        }
-        public MainWindow()
+            // lista ruchów 
+            switch (zapamietanyNumerGracza)
+            {
+                case 1:
+                    blackMoves.Items.Add(symbolPola(kliknieciePoziomo, kliknieciePionowo));
+                    break;
+                case 2:
+                    whiteMoves.Items.Add(symbolPola(kliknieciePoziomo, kliknieciePionowo));
+                    break;
+            }
+            blackMoves.SelectedIndex = blackMoves.Items.Count - 1;
+            blackMoves.SelectedIndex = blackMoves.Items.Count - 1;
+        
+
+    }
+    public MainWindow()
         {
             InitializeComponent(); // dostęp do MainWindow
 
