@@ -1,17 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Windows.Media.Animation;
 
 namespace Othello
 {
@@ -120,8 +112,7 @@ namespace Othello
                     }
                     else
                     {
-                        drawBoard.IsEnabled = false;
-                        playerColor.IsEnabled = false;
+                        Close();
                     }
 
                 }
@@ -163,7 +154,32 @@ namespace Othello
             uzgodnijZawartoscPlanszy();
 
         }
-        
 
+        #region Zamykanie okna
+        // zamykanie okna klawiszem escape
+        private void window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape) Close();
+        }
+        
+        // animacja zanikania okna
+        bool closingAnimation = false;
+        private void window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (!closingAnimation)
+            {
+                Storyboard closingScenario = this.Resources["closingScenario"] as Storyboard; // import Animation
+                closingScenario.Begin();
+                e.Cancel = true; // blokuje zamknięcie okna, aby można było zobaczyć animacje
+            }
+
+        }
+        // zamkniecie okna
+        private void Storyboard_Completed(object sender, EventArgs e)
+        {
+            closingAnimation = true;
+            Close();
+        }
+        #endregion
     }
 }

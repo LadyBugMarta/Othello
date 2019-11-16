@@ -1,13 +1,20 @@
 ﻿<Window x:Class="Othello.MainWindow" x:Name="window"
+        KeyDown="window_KeyDown" Closing="window_Closing"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="The Othello Game" Height="450" Width="625" MinHeight="350" MinWidth="525" Background="SeaGreen">
+        Title="The Othello Game" Height="450" Width="625" MinHeight="425" MinWidth="600" Background="SeaGreen">
 
-    <!--zamykanie okna-->
     <Window.Resources>
+        <!--zamykanie okna z zanikaniem-->
+        <Storyboard x:Key="closingScenario" Completed="Storyboard_Completed">
+            <DoubleAnimation Storyboard.TargetName="window"
+                             Storyboard.TargetProperty="Opacity"
+                             Duration="0:0:2" To="0.0"/>
+        </Storyboard>
+
 
 
         <!--efekt gradientu szarości na planszy-->
@@ -48,6 +55,7 @@
 
                 <StackPanel RenderTransformOrigin="1.5,0.426" Grid.ColumnSpan="2" Margin="0,0,0.2,0.4">
 
+                    <!--music properties, zmienić na Copy if never-->
                     <!--The MediaElement control plays the sound.-->
                     <MediaElement Name="myMediaElement" >
                         <MediaElement.Triggers>
@@ -64,6 +72,7 @@
                             </EventTrigger>
                         </MediaElement.Triggers>
                     </MediaElement>
+                    <MediaElement Height="16" Margin="185,0,0.4,0" Source="music.mp3" />
 
                 </StackPanel>
             </Grid>

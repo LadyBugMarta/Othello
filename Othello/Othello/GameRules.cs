@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Othello
 {
@@ -51,7 +47,7 @@ namespace Othello
             plansza[srodekSzerokosci - 1, srodekWysokosci] = plansza[srodekSzerokosci, srodekWysokosci - 1] = 2;
         }
         // wyznaczenie gracza wykonującego pierwszy ruch za pomocą konstruktora
-        public GameRules(int numerGraczaRozpoczynajacego, int szerokoscPlanszy=8, int wysokoscPlanszy=8)
+        public GameRules(int numerGraczaRozpoczynajacego, int szerokoscPlanszy=4, int wysokoscPlanszy=4)
         {
             if (numerGraczaRozpoczynajacego < 1 || numerGraczaRozpoczynajacego > 2)
                 throw new Exception("Nieprawidlowy numer gracza rozpoczynajacego gre");
