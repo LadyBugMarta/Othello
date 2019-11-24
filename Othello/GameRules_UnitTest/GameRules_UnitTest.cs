@@ -42,7 +42,7 @@ namespace GameRules_UnitTest
         }
 
         [TestMethod]
-        public void TestPobierzStanPola()
+        public void LoadFieldStatusTest()
         {
             GameRules gameRules = createRules();
 
@@ -87,14 +87,14 @@ namespace GameRules_UnitTest
         }
         [TestMethod]
         [ExpectedException(typeof(Exception))]
-        public void TestPobierzStanPola_PozaPlansza()
+        public void LoadFieldStatusTest_OusideBoard()
         {
             GameRules gameRules = createRules();
-            int stanPola = gameRules.DownloadFieldStatus(-1, -1);
-            stanPola = gameRules.DownloadFieldStatus(0, -1);
-            stanPola = gameRules.DownloadFieldStatus(-1, 0);
-            stanPola = gameRules.DownloadFieldStatus(-1, boardHeight-1);
-            stanPola = gameRules.DownloadFieldStatus(boardWidth - 1, -1);
+            int fieldState = gameRules.DownloadFieldStatus(-1, -1);
+            fieldState = gameRules.DownloadFieldStatus(0, -1);
+            fieldState = gameRules.DownloadFieldStatus(-1, 0);
+            fieldState = gameRules.DownloadFieldStatus(-1, boardHeight-1);
+            fieldState = gameRules.DownloadFieldStatus(boardWidth - 1, -1);
         }
 
     }
