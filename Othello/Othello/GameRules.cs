@@ -4,36 +4,66 @@ namespace Othello
 {
     public class GameRules
     {
-        #region Stan Planszy
-        // definiujemy planszę i metodę pozwalającą na odczyt stanu jej pól
+        #region Board status
+        
+        /// <summary>
+        /// Definiujemy szerokość planszy i metodę pozwalającą na odczyt stanu jej pól.
+        /// </summary>
         public int BoardWidth { get; private set; }
+        /// <summary>
+        /// Definiujemy wysokość planszy i metodę pozwalającą na odczyt stanu jej pól.
+        /// </summary>
         public int boardHeight { get; private set; }
 
-        // plansza jest deklarowana jako prywatna, a dostęp do niej jest możliwy dzięki publicznej metodzie PobierzStanPola
+
+        /// <summary>
+        /// Plansza jest deklarowana jako prywatna, a dostęp do niej jest możliwy dzięki publicznej metodzie DownloadFieldStatus.
+        /// </summary>
         private int[,] board;
-        // właśność identyfikująca gracza wykonującego następny ruch
+        /// <summary>
+        /// Właśność identyfikująca gracza wykonującego następny ruch.
+        /// </summary>
         public int NextPlayer { get; private set; } = 1;
-        // wyznacza numer gracza, przeciwnego do podanego w argumencie (1 dla 2 && 2 dla 1)
-        private static int competitor(int playerNumber) // numer przeciwnika
+
+        /// <summary>
+        /// Wyznacza numer gracza, przeciwnego do podanego w argumencie (1 dla 2 && 2 dla 1).
+        /// </summary>
+        /// <param name="playerNumber"> Numer przeciwnika.</param>
+        /// <returns></returns>
+        private static int Competitor(int playerNumber)
         {
             return (playerNumber == 1) ? 2 : 1;
         }
-        // metoda sprawdzająca poprawność podanej pozycji pola
-        private bool isCoordinatesCorrect(int horizontally, int vertically) // czy współrzędne pola są prawidłowe
+
+        /// <summary>
+        /// Metoda sprawdzająca poprawność podanej pozycji pola.
+        /// </summary>
+        /// <param name="horizontally"> Współrzędnę horyzontalne.</param>
+        /// <param name="vertically"> Współrzędne wertykalne.</param>
+        /// <returns></returns>
+        private bool isCoordinatesCorrect(int horizontally, int vertically) 
         {
             return horizontally >= 0 && horizontally < BoardWidth &&
                 vertically >= 0 && vertically < boardHeight;
         }
-        // metoda pozwalająca na odczytanie stanu planszy 
+
+        /// <summary>
+        /// Metoda pozwalająca na odczytanie stanu planszy.
+        /// </summary>
+        /// <param name="horizontally"> Współrzędne horyzontalne.</param>
+        /// <param name="vertically"> Współrzędne wertykalne.</param>
+        /// <returns></returns>
         public int DownloadFieldStatus(int horizontally, int vertically)
         {
             if (!isCoordinatesCorrect(horizontally, vertically))
                 throw new Exception("The invalid coordinate fields."); // Nieprawidlowe wspolrzedne pola
             return board[horizontally, vertically];
-            #endregion
         }
-        #region Konstruktor Klasy 
-        // utworzenie planszy za pomocą metody pomocniczej && ustawienie na niej kamieni
+        #endregion
+        #region Class Constructor
+        /// <summary>
+        /// Utworzenie planszy za pomocą metody pomocniczej && ustawienie na niej kamieni.
+        /// </summary>
         private void createBoard()
         {
             for (int i = 0; i < BoardWidth; i++)
@@ -46,7 +76,12 @@ namespace Othello
             board[middleWidth - 1, middleHeight - 1] = board[middleWidth, middleHeight] = 1;
             board[middleWidth - 1, middleHeight] = board[middleWidth, middleHeight - 1] = 2;
         }
-        // wyznaczenie gracza wykonującego pierwszy ruch za pomocą konstruktora
+        /// <summary>
+        /// Wyznaczenie gracza wykonującego pierwszy ruch za pomocą konstruktora.
+        /// </summary>
+        /// <param name="firstPlayer"> Gracz wykonujący ruch jako pierwszy.</param>
+        /// <param name="boardWidth"> Szerokość planszy.</param>
+        /// <param name="boardHeight"> Wysokość planszy.</param>
         public GameRules(int firstPlayer, int boardWidth=8, int boardHeight=8)
         {
             if (firstPlayer < 1 || firstPlayer > 2)
@@ -59,18 +94,24 @@ namespace Othello
             createBoard();
 
             NextPlayer = firstPlayer;
-            counter(); // licznik punktów
+            Counter(); // licznik punktów
         }
 
         #endregion
-        #region Implementacja zasad gry
+        #region Implementation of the Game Rules
         private void changeCurrentPlayer()
         {
-            NextPlayer = competitor(NextPlayer);
+            NextPlayer = Competitor(NextPlayer);
         }
 
-        // sprawdzenie czy argumenty metody należą do planszy && pole jest wolne
-        protected int PutStone(int horizontally, int vertically, bool test)  // połóż kamień
+        /// <summary>
+        /// Metoda sprawdza czy argumenty metody należą do planszy && pole jest wolne.
+        /// </summary>
+        /// <param name="horizontally"> Współrzędne horyzontalne.</param>
+        /// <param name="vertically"> Współrzędne wertykalne.</param>
+        /// <param name="test"></param>
+        /// <returns></returns>
+        protected int PutStone(int horizontally, int vertically, bool test)  
         {
             // czy wsplółrzędne są prawidłowe
             if (!isCoordinatesCorrect(horizontally, vertically))
@@ -104,10 +145,10 @@ namespace Othello
                         {
                             if (board[i, j] == NextPlayer) foundNextPlayerStone = true; // dopóki kładziemy kamień to wykonuje się pętla
                             if (board[i, j] == 0) foundEmptyField = true; // dopóki znajdziemy puste pole to wykonuje się pętla
-                            if (board[i, j] == competitor(NextPlayer)) foundRivalStone = true; // dopóki przeciwnik kładzie kamień to wykonuje się pętla
+                            if (board[i, j] == Competitor(NextPlayer)) foundRivalStone = true; // dopóki przeciwnik kładzie kamień to wykonuje się pętla
                         }
 
-                    } while (!(boardEdge || foundNextPlayerStone || foundEmptyField)); // game over, bye bye
+                    } while (!(boardEdge || foundNextPlayerStone || foundEmptyField)); // game over
 
                     // sprawdzenie warunku poprawności ruchu
                     bool stonePlacementIsPossible = foundRivalStone && foundNextPlayerStone && !foundEmptyField;
@@ -124,7 +165,7 @@ namespace Othello
                         }
                         howManyFields += max_index - 1; // bez tego kamienia który kładzie 
                     }
-                    counter(); // licznik punktów
+                    Counter(); // licznik punktów
 
                 } // koniec pętli po kierunkach
 
@@ -135,18 +176,27 @@ namespace Othello
             return howManyFields;
         }
 
-        // przeciążona wersja metody, sprawdza czy ruch jest możliwy
+        /// <summary>
+        /// Przeciążona wersja metody PutStone, sprawdza czy ruch jest możliwy.
+        /// </summary>
+        /// <param name="poziomo"> Współrzędne poziomo.</param>
+        /// <param name="pionowo"> Współrzędne pionowo.</param>
+        /// <returns></returns>
         public bool PutStone(int poziomo, int pionowo)
         {
             return PutStone(poziomo, pionowo, false) > 0;
         }
         #endregion
-        // pola zajęte przez obu graczy, ocena przewagi
-        #region Obliczanie pól zajętych przez graczy
-
-        private int[] fieldsNumber = new int[3]; // [puste pola, liczbaPolGracz1, liczbaPolGracz2]
-
-        private void counter()  // licznik punktów
+        
+        #region Calculation of fields occupied by players
+        /// <summary>
+        /// Tablica zawierająca [puste pola, liczbaPolGracz1, liczbaPolGracz2].
+        /// </summary>
+        private int[] fieldsNumber = new int[3];
+        /// <summary>
+        /// Metoda licząca punkty obydwóch graczy.
+        /// </summary>
+        private void Counter() 
         {
             for (int i = 0; i < fieldsNumber.Length; ++i)
                 fieldsNumber[i] = 0;
@@ -155,15 +205,28 @@ namespace Othello
                 for (int j = 0; j < boardHeight; ++j)
                     fieldsNumber[board[i, j]]++;
         }
-        // 3 właściwości tylko do odczytu 
+        
+        /// <summary>
+        /// Właściwość odczytująca puste pola.
+        /// </summary>
         public int EmptyFieldNumber {  get { return fieldsNumber[0]; } } 
+        /// <summary>
+        /// Właściwość odczytująca pola zajęte przez gracza 1.
+        /// </summary>
         public int PointsPlayer1 {  get { return fieldsNumber[1]; } }
+        /// <summary>
+        /// Właściwość odczytująca pola zajęte przez gracza 2.
+        /// </summary>
         public int PointsPlayer2 {  get { return fieldsNumber[2]; } }
         #endregion
-        #region Wykrywanie szczególnych sytuacji w grze
 
-        // metoda sprawdzająca czy gracz może położyć kamień na planszy
-        private bool canMakeMove() // czy bieżący gracz może wykonać ruch
+        #region Detection of specific game situations
+
+        /// <summary>
+        /// Metoda sprawdzająca czy bieżacy gracz może położyć kamień na planszy.
+        /// </summary>
+        /// <returns></returns>
+        private bool canMakeMove() 
         {
             int correctFields = 0;
             for (int i = 0; i < BoardWidth; i++)
@@ -173,7 +236,9 @@ namespace Othello
             return correctFields > 0;
         }
 
-        // metoda odpowiedzialna za oddanie ruchu przeciwnikowi, jeśli gracz nie może położyć kamienia na planszy
+        /// <summary>
+        /// Metoda odpowiedzialna za oddanie ruchu przeciwnikowi, jeśli gracz nie może położyć kamienia na planszy.
+        /// </summary>
         public void giveMove()
         {
             if (canMakeMove())
@@ -182,7 +247,9 @@ namespace Othello
             changeCurrentPlayer();
         }
 
-        // typ wyliczeniowy obejmujący wszystkie możliwe sytuacje w grze 
+        /// <summary>
+        /// Typ wyliczeniowy obejmujący wszystkie możliwe sytuacje w grze.
+        /// </summary>
         public enum Situation
         {
             MoveIsPossible,
@@ -191,7 +258,10 @@ namespace Othello
             BusyFields
         }
 
-        // co się dzieje na planszy 
+        /// <summary>
+        /// Metoda sprawdzająca co się dzieje na planszy.
+        /// </summary>
+        /// <returns></returns>
         public Situation CheckSituation()
         {
             if (EmptyFieldNumber == 0) return Situation.BusyFields; // brak pustych pól
@@ -211,7 +281,9 @@ namespace Othello
             }
         }
 
-        // wyłonienie zwycięzcy lub ustalenie remisu
+        /// <summary>
+        /// Wyłonienie zwycięzcy lub ustalenie remisu.
+        /// </summary>
         public int Lider
         {
             // tylko do odczytu
