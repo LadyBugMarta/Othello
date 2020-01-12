@@ -9,7 +9,7 @@ namespace Othello
         /// <summary>
         /// Definiujemy szerokość planszy i metodę pozwalającą na odczyt stanu jej pól.
         /// </summary>
-        public int BoardWidth { get; private set; }
+        public int boardWidth { get; private set; }
         /// <summary>
         /// Definiujemy wysokość planszy i metodę pozwalającą na odczyt stanu jej pól.
         /// </summary>
@@ -23,10 +23,10 @@ namespace Othello
         /// <summary>
         /// Właśność identyfikująca gracza wykonującego następny ruch.
         /// </summary>
-        public int NextPlayer { get; private set; } = 1;
+        public int nextPlayer { get; private set; } = 1;
 
         /// <summary>
-        /// Wyznacza numer gracza, przeciwnego do podanego w argumencie (1 dla 2 && 2 dla 1).
+        /// Wyznacza numer gracza, przeciwnego do podanego w argumencie 
         /// </summary>
         /// <param name="playerNumber"> Numer przeciwnika.</param>
         /// <returns></returns>
@@ -38,20 +38,20 @@ namespace Othello
         /// <summary>
         /// Metoda sprawdzająca poprawność podanej pozycji pola.
         /// </summary>
-        /// <param name="horizontally"> Współrzędnę horyzontalne.</param>
-        /// <param name="vertically"> Współrzędne wertykalne.</param>
+        /// <param name="horizontally"> Współrzędne poziome.</param>
+        /// <param name="vertically"> Współrzędne pionowe.</param>
         /// <returns></returns>
         private bool isCoordinatesCorrect(int horizontally, int vertically) 
         {
-            return horizontally >= 0 && horizontally < BoardWidth &&
+            return horizontally >= 0 && horizontally < boardWidth &&
                 vertically >= 0 && vertically < boardHeight;
         }
 
         /// <summary>
         /// Metoda pozwalająca na odczytanie stanu planszy.
         /// </summary>
-        /// <param name="horizontally"> Współrzędne horyzontalne.</param>
-        /// <param name="vertically"> Współrzędne wertykalne.</param>
+        /// <param name="horizontally"> Współrzędne poziome.</param>
+        /// <param name="vertically"> Współrzędne pionowe.</param>
         /// <returns></returns>
         public int DownloadFieldStatus(int horizontally, int vertically)
         {
@@ -67,11 +67,11 @@ namespace Othello
         /// </summary>
         private void createBoard()
         {
-            for (int i = 0; i < BoardWidth; i++)
+            for (int i = 0; i < boardWidth; i++)
                 for (int j = 0; j < boardHeight; j++)
                     board[i, j] = 0;
 
-            int middleWidth = BoardWidth / 2; // środek szerokości
+            int middleWidth = boardWidth / 2; // środek szerokości
             int middleHeight = boardHeight / 2; // środek wysokości
 
             board[middleWidth - 1, middleHeight - 1] = board[middleWidth, middleHeight] = 1;
@@ -88,13 +88,13 @@ namespace Othello
             if (firstPlayer < 1 || firstPlayer > 2)
                 throw new Exception("The invalid player number who is starting the game."); // Nieprawidlowy numer gracza rozpoczynajacego gre
 
-            BoardWidth = boardWidth;
+            this.boardWidth = boardWidth;
             this.boardHeight = boardHeight;
-            board = new int[BoardWidth, this.boardHeight];
+            board = new int[this.boardWidth, this.boardHeight];
 
             createBoard();
 
-            NextPlayer = firstPlayer;
+            nextPlayer = firstPlayer;
             Counter(); // licznik punktów
         }
 
@@ -103,16 +103,14 @@ namespace Othello
         #region Implementation of the Game Rules
         private void changeCurrentPlayer()
         {
-            NextPlayer = Competitor(NextPlayer);
+            nextPlayer = Competitor(nextPlayer);
         }
 
         /// <summary>
         /// Metoda sprawdza czy argumenty metody należą do planszy && pole jest wolne.
         /// </summary>
-        /// <param name="horizontally"> Współrzędne horyzontalne.</param>
-        /// <param name="vertically"> Współrzędne wertykalne.</param>
-        /// <param name="test"></param>
-        /// <returns></returns>
+        /// <param name="horizontally"> Współrzędne pionowe.</param>
+        /// <param name="vertically"> Współrzędne poziome.</param>
         protected int PutStone(int horizontally, int vertically, bool test)  
         {
             // czy wsplółrzędne są prawidłowe
@@ -145,9 +143,9 @@ namespace Othello
                         if (!isCoordinatesCorrect(i, j)) boardEdge = true;
                         if (!boardEdge)
                         {
-                            if (board[i, j] == NextPlayer) foundNextPlayerStone = true; // dopóki kładziemy kamień to wykonuje się pętla
+                            if (board[i, j] == nextPlayer) foundNextPlayerStone = true; // dopóki kładziemy kamień to wykonuje się pętla
                             if (board[i, j] == 0) foundEmptyField = true; // dopóki znajdziemy puste pole to wykonuje się pętla
-                            if (board[i, j] == Competitor(NextPlayer)) foundRivalStone = true; // dopóki przeciwnik kładzie kamień to wykonuje się pętla
+                            if (board[i, j] == Competitor(nextPlayer)) foundRivalStone = true; // dopóki przeciwnik kładzie kamień to wykonuje się pętla
                         }
 
                     } while (!(boardEdge || foundNextPlayerStone || foundEmptyField)); // game over
@@ -163,7 +161,7 @@ namespace Othello
                         if (!test) // ustawienie wartości zmienna true
                         {
                             for (int index = 0; index < max_index; index++)
-                                board[horizontally + index * horizontallyDirection, vertically + index * verticallyDirection] = NextPlayer;
+                                board[horizontally + index * horizontallyDirection, vertically + index * verticallyDirection] = nextPlayer;
                         }
                         howManyFields += max_index - 1; // bez tego kamienia który kładzie 
                     }
@@ -181,12 +179,12 @@ namespace Othello
         /// <summary>
         /// Przeciążona wersja metody PutStone, sprawdza czy ruch jest możliwy.
         /// </summary>
-        /// <param name="poziomo"> Współrzędne poziomo.</param>
-        /// <param name="pionowo"> Współrzędne pionowo.</param>
+        /// <param name="horizontally"> Współrzędne poziomo.</param>
+        /// <param name="vertically"> Współrzędne pionowo.</param>
         /// <returns></returns>
-        public bool PutStone(int poziomo, int pionowo)
+        public bool PutStone(int horizontally, int vertically)
         {
-            return PutStone(poziomo, pionowo, false) > 0;
+            return PutStone(horizontally, vertically, false) > 0;
         }
         #endregion
         
@@ -203,7 +201,7 @@ namespace Othello
             for (int i = 0; i < fieldsNumber.Length; ++i)
                 fieldsNumber[i] = 0;
 
-            for (int i = 0; i < BoardWidth; ++i)
+            for (int i = 0; i < boardWidth; ++i)
                 for (int j = 0; j < boardHeight; ++j)
                     fieldsNumber[board[i, j]]++;
         }
@@ -231,7 +229,7 @@ namespace Othello
         private bool canMakeMove() 
         {
             int correctFields = 0;
-            for (int i = 0; i < BoardWidth; i++)
+            for (int i = 0; i < boardWidth; i++)
                 for (int j = 0; j < boardHeight; j++)
                     if (board[i, j] == 0 && PutStone(i, j, true) > 0) // jeżeli pola są puste i możliwe jest położenie kamienia 
                         correctFields++; // zwiększaj liczbaPoprawnychPol

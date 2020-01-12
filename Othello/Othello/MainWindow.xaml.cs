@@ -25,7 +25,7 @@ namespace Othello
         {
             get
             {
-                return board[rule.BoardWidth - 1, rule.boardHeight - 1] != null;
+                return board[rule.boardWidth - 1, rule.boardHeight - 1] != null;
             }
         }
 
@@ -34,13 +34,13 @@ namespace Othello
         {
             if (!initiatedBoard) return;
 
-            for (int i = 0; i < rule.BoardWidth; i++)
+            for (int i = 0; i < rule.boardWidth; i++)
                 for (int j = 0; j < rule.boardHeight; j++)
                 {
                     board[i, j].Background = colors[rule.DownloadFieldStatus(i, j)];
                 }
 
-            playerColor.Background = colors[rule.NextPlayer];
+            playerColor.Background = colors[rule.nextPlayer];
             blackField.Text = rule.PointsPlayer1.ToString(); // wyświetlenie ilości punktów czarnego gracza
             whiteField.Text = rule.PointsPlayer2.ToString(); // wyświetlenie ilości punktów białego gracza
         }
@@ -65,7 +65,7 @@ namespace Othello
             int clickedVertically = coord.Vertically;
 
             // wykonanie ruchu
-            int savedPlayerNumber = rule.NextPlayer;
+            int savedPlayerNumber = rule.nextPlayer;
             if (rule.PutStone(clickedHorizontally, clickedVertically))
             {
                 boardContent();
@@ -88,7 +88,7 @@ namespace Othello
                 switch (situation)
                 {
                     case GameRules.Situation.CurrentPlayerCantMove:
-                        MessageBox.Show("Player" + names[rule.NextPlayer] + " is forced to give up the movement"); // zmuszony do oddania ruchu
+                        MessageBox.Show("Player" + names[rule.nextPlayer] + " is forced to give up the movement"); // zmuszony do oddania ruchu
                         rule.giveMove(); // oddaj ruch
                         boardContent();
                         break;
@@ -112,7 +112,7 @@ namespace Othello
                     // nowa gra
                     if (MessageBox.Show("Do you wanna play again?", "The Othello", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes) == MessageBoxResult.Yes)
                     {
-                        newBoard(1, rule.BoardWidth, rule.boardHeight);
+                        newBoard(1, rule.boardWidth, rule.boardHeight);
                     }
                     else
                     {
@@ -136,14 +136,14 @@ namespace Othello
             InitializeComponent(); // dostęp do MainWindow
 
             // podział planszy na wiersze i kolumny
-            for (int i = 0; i < rule.BoardWidth; i++)
+            for (int i = 0; i < rule.boardWidth; i++)
                 drawBoard.ColumnDefinitions.Add(new ColumnDefinition()); // dodaj kolumne
             for (int j = 0; j < rule.boardHeight; j++)
                 drawBoard.RowDefinitions.Add(new RowDefinition()); // dodaj wiersz
 
             // utworzenie przycisków
-            board = new Button[rule.BoardWidth, rule.boardHeight];
-            for (int i = 0; i < rule.BoardWidth; i++)
+            board = new Button[rule.boardWidth, rule.boardHeight];
+            for (int i = 0; i < rule.boardWidth; i++)
                 for (int j = 0; j < rule.boardHeight; j++)
                 {
                     Button button = new Button(); // tworzymy nowy przycisk

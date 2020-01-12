@@ -24,9 +24,9 @@ namespace GameRules_UnitTest
         {
             GameRules gameRules = createRules();
 
-            Assert.AreEqual(boardWidth, gameRules.BoardWidth);
+            Assert.AreEqual(boardWidth, gameRules.boardWidth);
             Assert.AreEqual(boardHeight, gameRules.boardHeight);
-            Assert.AreEqual(firstPlayer, gameRules.NextPlayer);
+            Assert.AreEqual(firstPlayer, gameRules.nextPlayer);
         }
 
         // ułożenie początkowych kamieni na planszy
