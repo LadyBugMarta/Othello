@@ -60,6 +60,7 @@ namespace Othello
             return board[horizontally, vertically];
         }
         #endregion
+
         #region Class Constructor
         /// <summary>
         /// Utworzenie planszy za pomocą metody pomocniczej && ustawienie na niej kamieni.
@@ -98,6 +99,7 @@ namespace Othello
         }
 
         #endregion
+
         #region Implementation of the Game Rules
         private void changeCurrentPlayer()
         {
