@@ -83,7 +83,7 @@ namespace Othello
         /// <param name="firstPlayer"> Gracz wykonujący ruch jako pierwszy.</param>
         /// <param name="boardWidth"> Szerokość planszy.</param>
         /// <param name="boardHeight"> Wysokość planszy.</param>
-        public GameRules(int firstPlayer, int boardWidth=8, int boardHeight=8)
+        public GameRules(int firstPlayer, int boardWidth=4, int boardHeight=4)
         {
             if (firstPlayer < 1 || firstPlayer > 2)
                 throw new Exception("The invalid player number who is starting the game."); // Nieprawidlowy numer gracza rozpoczynajacego gre

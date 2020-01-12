@@ -4,6 +4,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Globalization;
+using System.Configuration;
 
 namespace Othello
 {
@@ -86,7 +88,7 @@ namespace Othello
                 switch (situation)
                 {
                     case GameRules.Situation.CurrentPlayerCantMove:
-                        MessageBox.Show("Player " + names[rule.NextPlayer] + " is forced to give up the movement"); // zmuszony do oddania ruchu
+                        MessageBox.Show("Player" + names[rule.NextPlayer] + " is forced to give up the movement"); // zmuszony do oddania ruchu
                         rule.giveMove(); // oddaj ruch
                         boardContent();
                         break;
@@ -130,6 +132,7 @@ namespace Othello
         }
     public MainWindow()
         {
+            Properties.Resources.Culture = new CultureInfo(ConfigurationManager.AppSettings["Culture"]);
             InitializeComponent(); // dostęp do MainWindow
 
             // podział planszy na wiersze i kolumny
