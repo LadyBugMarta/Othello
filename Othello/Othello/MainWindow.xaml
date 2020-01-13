@@ -52,7 +52,7 @@
 
                 <StackPanel RenderTransformOrigin="1.5,0.426" Grid.ColumnSpan="2" Margin="0,0,0.2,0.4">
 
-                    <!--music properties, zmienić na Copy if never-->
+                    <!--music properties, changed to "Copy if never"-->
                     <!--The MediaElement control plays the sound.-->
                     <MediaElement Name="myMediaElement" >
                         <MediaElement.Triggers>
@@ -69,7 +69,6 @@
                             </EventTrigger>
                         </MediaElement.Triggers>
                     </MediaElement>
-                    <MediaElement Height="16" Margin="185,0,0.4,0" Source="music.mp3" />
 
                 </StackPanel>
             </Grid>
