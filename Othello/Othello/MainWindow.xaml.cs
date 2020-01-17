@@ -29,7 +29,9 @@ namespace Othello
             }
         }
 
-        // kolory kamieni na planszy
+        /// <summary>
+        /// kolory kamieni na planszy
+        /// </summary>
         private void boardContent()
         {
             if (!initiatedBoard) return;
@@ -44,7 +46,10 @@ namespace Othello
             blackField.Text = rule.PointsPlayer1.ToString(); // wyświetlenie ilości punktów czarnego gracza
             whiteField.Text = rule.PointsPlayer2.ToString(); // wyświetlenie ilości punktów białego gracza
         }
-        private struct coordinates // współrzędne
+        /// <summary>
+        /// współrzędne
+        /// </summary>
+        private struct coordinates 
         {
             public int Horizontally, Vertically;
         }
@@ -56,7 +61,11 @@ namespace Othello
             return "" + "ABCDEFGHIJKLMNOPQRSTUVXYZ"[horizontally] + "123456789"[vertically];
         }
 
-        // metoda odczytująca własności Tag przycisku
+        /// <summary>
+        /// Metoda odczytująca własności Tag przycisku
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void boardClickField(object sender, RoutedEventArgs e)
         {
             Button clickedButton = sender as Button;
@@ -158,7 +167,11 @@ namespace Othello
         }
 
         #region Zamykanie okna
-        // zamykanie okna klawiszem escape
+        /// <summary>
+        /// zamykanie okna klawiszem escape
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void window_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape) Close();

@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28010.2046
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Othello", "Othello\Othello.csproj", "{DA77CB8E-0140-43D0-86AE-2C61F92361CD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameRules_UnitTest", "GameRules_UnitTest\GameRules_UnitTest.csproj", "{03E8D02B-CF39-4D88-9478-676C598E7413}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj", "{FA0BE20B-F713-48BB-B4B5-2779A4915BC5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,8 @@ Global
 		{03E8D02B-CF39-4D88-9478-676C598E7413}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{03E8D02B-CF39-4D88-9478-676C598E7413}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{03E8D02B-CF39-4D88-9478-676C598E7413}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA0BE20B-F713-48BB-B4B5-2779A4915BC5}.Debug|Any CPU.ActiveCfg = Debug
+		{FA0BE20B-F713-48BB-B4B5-2779A4915BC5}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
