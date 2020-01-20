@@ -56,7 +56,7 @@ namespace Othello
         public int DownloadFieldStatus(int horizontally, int vertically)
         {
             if (!isCoordinatesCorrect(horizontally, vertically))
-                throw new Exception("The invalid coordinate fields."); // Nieprawidlowe wspolrzedne pola
+                throw new Exception("The invalid coordinate fields."); 
             return board[horizontally, vertically];
         }
         #endregion
@@ -71,8 +71,8 @@ namespace Othello
                 for (int j = 0; j < boardHeight; j++)
                     board[i, j] = 0;
 
-            int middleWidth = boardWidth / 2; // środek szerokości
-            int middleHeight = boardHeight / 2; // środek wysokości
+            int middleWidth = boardWidth / 2; 
+            int middleHeight = boardHeight / 2; 
 
             board[middleWidth - 1, middleHeight - 1] = board[middleWidth, middleHeight] = 1;
             board[middleWidth - 1, middleHeight] = board[middleWidth, middleHeight - 1] = 2;
@@ -86,7 +86,7 @@ namespace Othello
         public GameRules(int firstPlayer, int boardWidth=8, int boardHeight=8)
         {
             if (firstPlayer < 1 || firstPlayer > 2)
-                throw new Exception("The invalid player number who is starting the game."); // Nieprawidlowy numer gracza rozpoczynajacego gre
+                throw new Exception("The invalid player number who is starting the game."); 
 
             this.boardWidth = boardWidth;
             this.boardHeight = boardHeight;
@@ -95,7 +95,7 @@ namespace Othello
             createBoard();
 
             nextPlayer = firstPlayer;
-            Counter(); // licznik punktów
+            Counter(); 
         }
 
         #endregion
@@ -113,66 +113,58 @@ namespace Othello
         /// <param name="vertically"> Współrzędne poziome.</param>
         protected int PutStone(int horizontally, int vertically, bool test)  
         {
-            // czy wsplółrzędne są prawidłowe
             if (!isCoordinatesCorrect(horizontally, vertically))
-                throw new Exception("The invalid field coordinates."); // Nieprawidłowe współrzędne pola
+                throw new Exception("The invalid field coordinates."); 
 
-            // czy pole nie jest już zajęte
             if (board[horizontally, vertically] != 0) return -1;
 
-            int howManyFields = 0; // ile pól przejętych
+            int howManyFields = 0;
 
-            //pętla po 8 kierunkach przyjmuje wartości {-1,0,1}
-            for (int horizontallyDirection = -1; horizontallyDirection <= 1; horizontallyDirection++) // sprawdzamy czy możemy przejąć pole w każdą stronę
+            for (int horizontallyDirection = -1; horizontallyDirection <= 1; horizontallyDirection++) 
                 for (int verticallyDirection = -1; verticallyDirection <= 1; verticallyDirection++)
                 {
-                    // wymuszenie pominięcia przypadku, gdy obie zmienne są równe 0
                     if (horizontallyDirection == 0 && verticallyDirection == 0) continue;
 
-                    // szukanie kamieni gracza w jednym z 8 kierunków
                     int i = horizontally;
                     int j = vertically;
                     bool foundRivalStone = false;
                     bool foundNextPlayerStone = false;
                     bool foundEmptyField = false;
-                    bool boardEdge = false; // osiagnieta krawędź planszy
-                    do // przejmowanie pól
+                    bool boardEdge = false; 
+                    do 
                     {
                         i += horizontallyDirection;
                         j += verticallyDirection;
                         if (!isCoordinatesCorrect(i, j)) boardEdge = true;
                         if (!boardEdge)
                         {
-                            if (board[i, j] == nextPlayer) foundNextPlayerStone = true; // dopóki kładziemy kamień to wykonuje się pętla
-                            if (board[i, j] == 0) foundEmptyField = true; // dopóki znajdziemy puste pole to wykonuje się pętla
-                            if (board[i, j] == Competitor(nextPlayer)) foundRivalStone = true; // dopóki przeciwnik kładzie kamień to wykonuje się pętla
+                            if (board[i, j] == nextPlayer) foundNextPlayerStone = true; 
+                            if (board[i, j] == 0) foundEmptyField = true;
+                            if (board[i, j] == Competitor(nextPlayer)) foundRivalStone = true;
                         }
 
-                    } while (!(boardEdge || foundNextPlayerStone || foundEmptyField)); // game over
+                    } while (!(boardEdge || foundNextPlayerStone || foundEmptyField));
 
-                    // sprawdzenie warunku poprawności ruchu
                     bool stonePlacementIsPossible = foundRivalStone && foundNextPlayerStone && !foundEmptyField;
                  
-                    // "odwrócenie" kamieni w przypadku spełnionego warunku
+                   
                     if (stonePlacementIsPossible)
                     {
-                        int max_index = Math.Max(Math.Abs(i - horizontally), Math.Abs(j - vertically)); // przejmujemy jak najwięcej pól
+                        int max_index = Math.Max(Math.Abs(i - horizontally), Math.Abs(j - vertically));
 
-                        if (!test) // ustawienie wartości zmienna true
+                        if (!test) 
                         {
                             for (int index = 0; index < max_index; index++)
                                 board[horizontally + index * horizontallyDirection, vertically + index * verticallyDirection] = nextPlayer;
                         }
-                        howManyFields += max_index - 1; // bez tego kamienia który kładzie 
+                        howManyFields += max_index - 1; 
                     }
-                    Counter(); // licznik punktów
+                    Counter(); 
 
-                } // koniec pętli po kierunkach
+                } 
 
-            // zmiana gracza, jeżeli ruch został wykonany 
             if (howManyFields > 0 && !test)
                 changeCurrentPlayer();
-            // zmienna ilePolPrzejętych nie uwzględnia dostawionego kamienia
             return howManyFields;
         }
 
@@ -231,8 +223,8 @@ namespace Othello
             int correctFields = 0;
             for (int i = 0; i < boardWidth; i++)
                 for (int j = 0; j < boardHeight; j++)
-                    if (board[i, j] == 0 && PutStone(i, j, true) > 0) // jeżeli pola są puste i możliwe jest położenie kamienia 
-                        correctFields++; // zwiększaj liczbaPoprawnychPol
+                    if (board[i, j] == 0 && PutStone(i, j, true) > 0)
+                        correctFields++; 
             return correctFields > 0;
         }
 
@@ -242,7 +234,6 @@ namespace Othello
         public void giveMove()
         {
             if (canMakeMove())
-                // Gracz nie może oddać ruchu jeśli wykonanie ruchu jest możliwe
                 throw new Exception("A player may not return a move if it is possible to make a move.");
             changeCurrentPlayer();
         }
@@ -264,20 +255,18 @@ namespace Othello
         /// <returns></returns>
         public Situation CheckSituation()
         {
-            if (EmptyFieldNumber == 0) return Situation.BusyFields; // brak pustych pól
+            if (EmptyFieldNumber == 0) return Situation.BusyFields;
 
-            // wykrycie możliwości ruchu gracza
             bool isMovePossible = canMakeMove();
             if (isMovePossible) return Situation.MoveIsPossible;
             else
             {
-                // wykrycie możliwości ruchu przeciwnika
                 changeCurrentPlayer();
                 bool isPossibleRivalMove = canMakeMove();
                 changeCurrentPlayer();
                 if (isPossibleRivalMove)
                     return Situation.CurrentPlayerCantMove;
-                else return Situation.BothPlayersCantMove; // może wystąpić tylko na wielkiej planszy 
+                else return Situation.BothPlayersCantMove;
             }
         }
 
@@ -286,11 +275,10 @@ namespace Othello
         /// </summary>
         public int Lider
         {
-            // tylko do odczytu
             get
             { 
-                if (PointsPlayer1 == PointsPlayer2) return 0; // w przypadku remisu własność zwraca 0
-                else return (PointsPlayer1 > PointsPlayer2) ? 1 : 2; // ustalenie zwycięzcy
+                if (PointsPlayer1 == PointsPlayer2) return 0; 
+                else return (PointsPlayer1 > PointsPlayer2) ? 1 : 2; 
             }
         }
         #endregion
